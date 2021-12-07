@@ -1,4 +1,3 @@
-C:\Users\dwood\Documents\Dom DMACC\Dom DMACC F2021\CIS 152\Final\WireWizard\obj\Debug\net5.0\WireWizard.csproj.AssemblyReference.cache
 C:\Users\dwood\Documents\Dom DMACC\Dom DMACC F2021\CIS 152\Final\WireWizard\obj\Debug\net5.0\WireWizard.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\dwood\Documents\Dom DMACC\Dom DMACC F2021\CIS 152\Final\WireWizard\obj\Debug\net5.0\WireWizard.AssemblyInfoInputs.cache
 C:\Users\dwood\Documents\Dom DMACC\Dom DMACC F2021\CIS 152\Final\WireWizard\obj\Debug\net5.0\WireWizard.AssemblyInfo.cs
@@ -10,3 +9,4 @@ C:\Users\dwood\Documents\Dom DMACC\Dom DMACC F2021\CIS 152\Final\WireWizard\bin\
 C:\Users\dwood\Documents\Dom DMACC\Dom DMACC F2021\CIS 152\Final\WireWizard\obj\Debug\net5.0\WireWizard.dll
 C:\Users\dwood\Documents\Dom DMACC\Dom DMACC F2021\CIS 152\Final\WireWizard\obj\Debug\net5.0\ref\WireWizard.dll
 C:\Users\dwood\Documents\Dom DMACC\Dom DMACC F2021\CIS 152\Final\WireWizard\obj\Debug\net5.0\WireWizard.pdb
+C:\Users\dwood\Documents\Dom DMACC\Dom DMACC F2021\CIS 152\Final\WireWizard\obj\Debug\net5.0\WireWizard.csproj.AssemblyReference.cache

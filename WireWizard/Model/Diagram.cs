@@ -4,56 +4,61 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using WireWizard.Contoller;
 namespace WireWizard
 {
     public class Diagram
     {
-        private string id;
-        private List<Device> devices;
-        private List<Wire> wires;
-        private static int nextID = 100;
-        
-        //Constructors;
+        private string id;                  // Unique identifier for diagram.
+        private List<Device> devices;       // List of devices.
+        private List<Wire> wires;           // List of wires.
+        private static int nextID = 100;    // Static number used to generate ID numbers.
+        private DiagramFormatter df;        // Formatter class to help read files.
+
+        // Default Constructor.
         public Diagram()
         {
             devices = new List<Device>();
             wires = new List<Wire>();
-            this.id = GetID();
+            df = new DiagramFormatter();
+            id = GetID();                   // Generate ID.
         }
 
-
-
-        public Diagram(List<Device> devices, string id)
+        // Constructor
+        // Takes a formatter object.
+        public Diagram(DiagramFormatter formatter)
         {
-            this.Devices = devices;
+            devices = new List<Device>();
             wires = new List<Wire>();
-            this.id = id;
+            df = formatter;
+            id = GetID();                   // Generate ID.
         }
 
         //Accessors
         public int WireCount
         {
-
             get { return wires.Count; }
         }
+
         public int DeviceCount
         {
             get { return devices.Count; }
         }
-
         
-
         public List<Device> Devices
         {
             get { return devices; }
             set { devices = value; }
         }
+
         public List<Wire> Wires
         {
             get { return wires; }
             set { wires = value; }
         }
+
+        // Method to add device to diagram.
+        // param Device
         public void AddDevice(Device device)
         {
             if (HasDevice(device.ID))
@@ -62,56 +67,51 @@ namespace WireWizard
             }
             devices.Add(device);
         }
-        public void AddDevice(string name)
+
+        // Method to add device to diagram.
+        // param string device ID.
+        public void AddDevice(string id)
         {
-            AddDevice(new Device(name, this));
+            AddDevice(new Device(id, this));    //Construct new Device with given id.
         }
+
+        // Method to check if device exists.
+        // param string device ID.
+        // returns true if device list contains this ID.
         public bool HasDevice(string id)
         {
             return devices.Exists(d => d.ID == id.Trim());
         }
-
-
-        
-
+         
+        // Method to get device object with given ID.
+        // param string device ID.
+        // returns existing Device object from the diagram.
         public Device GetDevice(string deviceID)
         {
             return this.Devices.First(d => d.ID == deviceID);
         }
 
-        internal Terminal GetTerminal(string destination)
-        {
+        // Method to get terminal object with given ID.
+        // param string terminal ID.
+        // returns existing Terminal object from a device.
+        public Terminal GetTerminal(string id)
+        { 
             string str = "";
-            string c;
-            int i = 0;
-            int dashIndex = destination.IndexOf('-');
-            str = destination.Substring(0, dashIndex);
+            str = df.DestinationDeviceID(id);
             Device device = devices.First<Device>(d => d.ID == str);
-            str = destination.Substring(dashIndex + 1);
+            str = df.DestinationTerminalID(id);
             return device.Terminals.First<Terminal>(t => t.ID == str);
-        }
-        
+        }        
 
-        private bool IsTerminalName(Device d, string str)
-        {
-            foreach (Terminal t in d.Terminals)
-            {
-                
-                if (t.ID.Equals(str))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
+        // Method to generate unique ID numbers.
+        // returns unique ID number from static seed.
         private string GetID()
         {
             return nextID++.ToString();
         }
 
-
-
+        // Method to make a string that represents the diagram.
+        // returns string describing devices and terminals.
         public override string ToString()
         {
             string str = "";
@@ -120,32 +120,6 @@ namespace WireWizard
                 str += "\n" + d.ToString() + "\n";
             }
             return str;
-        }
-
-        public string[] ListWires()
-        {
-            string[] str = new string[this.WireCount];
-            int i = 0;
-            foreach (Wire w in this.wires)                
-            {
-                str[i++] = w.ToString();
-            }
-            return str;
-        }
-
-        internal Device GetOrAddDevice(string str)
-        {
-            Device d;
-            if (HasDevice(str))
-            {
-                d = GetDevice(str);
-            }
-            else
-            {
-                AddDevice(str);
-                d = GetDevice(str);
-            }
-            return d;
         }
     }
 }

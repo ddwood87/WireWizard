@@ -9,31 +9,33 @@ namespace WireWizard
     public class Device
     {
         private Diagram diagram;
-        private string partNo;
         private string id;
         private List<Terminal> terminals;
 
+        // Default constructor.
         public Device()
         {
             this.terminals = new List<Terminal>();
         }
-        public Device(string name)
+
+        // Constructor
+        // param string ID for device.
+        public Device(string id)
         {
-            this.id = name;
-            this.terminals = new List<Terminal>();
-        }
-        public Device(string name, Diagram diagram)
-        {
-            this.diagram = diagram;
-            this.id = name;
+            this.id = id;
             this.terminals = new List<Terminal>();
         }
 
-        public string PartNumber
+        // Constructor.
+        // param string ID and Diagram
+        public Device(string id, Diagram diagram)
         {
-            get { return partNo; }
-            set { partNo = value; }
+            this.diagram = diagram;
+            this.id = id;
+            this.terminals = new List<Terminal>();
         }
+
+        // Accessors.
         public string ID
         {
             get { return id; }
@@ -44,6 +46,9 @@ namespace WireWizard
             get { return terminals; }
             set { terminals = value; }
         }
+
+        // This method adds a terminal to the device.
+        // param Terminal
         public void AddTerminal(Terminal terminal)
         {
             if (HasTerminal(terminal.ID))
@@ -52,6 +57,9 @@ namespace WireWizard
             }
             terminals.Add(terminal);
         }
+
+        // This method creates a terminal and adds it to the device.
+        // param string terminal ID
         public void AddTerminal(string terminalID)
         {
             if (HasTerminal(terminalID))
@@ -60,19 +68,32 @@ namespace WireWizard
             }
             terminals.Add(new Terminal(terminalID, this));
         }
+
+        // This method returns true if device contains a terminal ID.
+        // param string terminal ID.
         public bool HasTerminal(string terminalID)
         {
             return this.Terminals.Exists(t => t.ID == terminalID.Trim());
         }
+
+        // This method gets a terminal object from the device.
+        // param string terminal ID.
+        // returns Terminal object.
         public Terminal GetTerminal(string terminalID)
         {
             return this.Terminals.First(t => t.ID == terminalID);
         }
+
+        // This method removes a terminal from the device.
+        // param Terminal to be removed.
         public void RemoveTerminal(Terminal t)
         {
             t.RemoveWires();
             terminals.Remove(t);
         }
+
+        // This method writes a string describing the device and its terminals.
+        // returns string detailing device.
         public override string ToString()
         {
             string str = "";
@@ -91,21 +112,6 @@ namespace WireWizard
                 str += "\n";
             }
             return str;
-        }
-
-        internal Terminal GetOrAddTerminal(string str)
-        {
-            Terminal t;
-            if (HasTerminal(str))
-            {
-                t = GetTerminal(str);
-            }
-            else
-            {
-                t = new Terminal(str);
-                AddTerminal(t);
-            }
-            return t;
         }
     }   
 }

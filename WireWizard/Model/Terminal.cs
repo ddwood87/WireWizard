@@ -13,17 +13,23 @@ namespace WireWizard
         private Wire wire1;
         private Wire wire2;
         
+        // Default constructor sets no fields.
         public Terminal() { }
 
+        // Constructor sets the ID field.
         public Terminal(string id)
         {
             this.id = id;
         }
+
+        // Constructor sets id and device fields.
         public Terminal(string id, Device device)
         {
             this.id = id;
             this.device = device;
         }
+
+        // Accessors.
         public string ID
         {
             get { return id; }
@@ -43,6 +49,8 @@ namespace WireWizard
             get { return wire2; }
         }
 
+        // This method connects adds a wire to an empty wire field.
+        // param Wire to be added.
         public void Connect(Wire wire)
         {
             if (!wire.IsConnected(this)) { 
@@ -57,12 +65,15 @@ namespace WireWizard
             }
         }
 
+        // This method removes wires from the terminal.
         public void RemoveWires()
         {
             wire1 = null;
             wire2 = null;
         }
 
+        // This method writes a string containing device ID and terminal ID.
+        // returns string terminal name.
         public override string ToString()
         {
             return Device.ID + "-" + id;

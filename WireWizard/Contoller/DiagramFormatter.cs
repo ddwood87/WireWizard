@@ -18,12 +18,29 @@ namespace WireWizard.Contoller
         private string[] defaultMarkers = { "A", "B", "C", "D", "E", "F"};
         private string defaultDevice = "*A";
         private string defaultConnection = "B.C-D,E-F";
-        private string[] lines;
         private string connectionFormat;
         private string deviceFormat;
         private string[] markers;
         private string[] starters, enders;
 
+        // Accessors.
+        public string ConnectionFormat
+        {
+            get { return connectionFormat; }
+            set { connectionFormat = value;
+                  SetFormat();
+                }
+        }
+        public string DeviceFormat
+        {
+            get { return deviceFormat; }
+            set { 
+                deviceFormat = value;
+                SetFormat();
+            }
+        }
+
+        // Default constructor.
         public DiagramFormatter()
         {
             this.connectionFormat = defaultConnection;
@@ -32,32 +49,17 @@ namespace WireWizard.Contoller
             SetFormat();
         }
 
-        public DiagramFormatter(string filePath, string connectionFormat)
+        // Sets the formatter to default values.
+        public void DefaultFormat()
         {
-            int i = 0;
-            foreach (string line in File.ReadLines(filePath))
-            {
-                lines[i++] = line;
-            }
-            this.connectionFormat = connectionFormat;
-            this.deviceFormat = defaultDevice;
-            markers = defaultMarkers;
+            deviceFormat = defaultDevice;
+            connectionFormat = defaultConnection;
             SetFormat();
-            //ReadDiagram(lines, out Queue<Device> devices, out Queue<Wire> wires);
         }
 
-        public DiagramFormatter(string filePath, string connectionFormat, string deviceFormat)
-        {
-            int i = 0;
-            foreach (string line in File.ReadLines(filePath))
-            {
-                lines[i++] = line;
-            }
-            this.connectionFormat = connectionFormat;
-            this.deviceFormat = deviceFormat;
-            markers = defaultMarkers;
-            SetFormat();
-        }
+        // This method returns true if the line has a device name.
+        // param string file line.
+        // returns boolean true if the line is a device ID.
         public bool IsDevice(string line) 
         {
             string deviceStart = starters[0];
@@ -68,6 +70,10 @@ namespace WireWizard.Contoller
             }
             return false;
         }
+
+        // This method gets the device ID from a line.
+        // param string file line.
+        // returns string device ID.
         public string ReadDevice(string line) 
         { 
             string deviceStart = starters[0];
@@ -78,20 +84,85 @@ namespace WireWizard.Contoller
             }
             return "";
         }
+
+        // This method gets the separator characters used in the format.
+        // returns string array containing separator characters.
+        public string[] GetSeparators()
+        {
+            string[] separators = new string[8];
+            int s = 0;
+            separators[s++] = starters[0];
+            separators[s++] = enders[0];
+            for (int i = 1; i < starters.Length; i++)
+            {
+                if (starters[i] == enders[i - 1])
+                {
+                    separators[s++] = starters[i];
+                }
+                else
+                {
+                    separators[s++] = enders[i - 1] + starters[i];
+                    if (i == starters.Length - 1)
+                    {
+                        separators[s++] = enders[i];
+                    }
+                }
+            }
+            return separators;            
+        }
+
+        // This method builds a Device name string using separators.
+        // param separators
+        // returns string device ID file line.
+        public string BuildDeviceFormat(string[] separators)
+        {
+            string str = "";
+            str += separators[0] + markers[0] + separators[1];
+            return str;
+        }
+
+        // This method builds a connection line string using separators.
+        // param separators
+        // returns string terminal connection detail.
+        public string BuildConnectionFormat(string[] separators)
+        {
+            string str = "";
+            for (int i = 2; i < separators.Length; i++)
+            {
+                str += separators[i];
+                if(i <= markers.Length)
+                {
+                    str += markers[i-1];
+                }
+            }
+            return str;
+        }
+
+        // This method checks if a file line is a terminal detail.
+        // param string file line
+        // returs boolean true if the line has a terminal.
         public bool IsTerminal(string line) 
         {
-            string termStart = starters[0];
-            string termEnd = enders[0];
+            string termStart = starters[1];
+            string termEnd = enders[1];
             if(line.Contains(termStart) && line.Contains(termEnd))
             { return true; }
             else{ return false; }            
         }
+
+        // This method reads the terminal ID from a connection string.
+        // param string file line
+        // returns string terminal ID.
         public string ReadTerminal(string line) 
         {
             string termStart = starters[1];
             string termEnd = enders[1];
             return GetSubstring(line, termStart, termEnd).Trim();
         }
+
+        // This method checks that a line has a connection.
+        // param string file line
+        // returns boolean true if the line contains a connection.
         public bool HasConnection(string line)
         {
             string connStart = starters[1];
@@ -100,36 +171,69 @@ namespace WireWizard.Contoller
             { return true; }
             else { return false; }
         }
+
+        // This method checks that a line has two connections.
+        // param string file line
+        // returns boolean true if the line contains two connections.
         public bool HasTwoConnections(string line)
         {
             string connStart = starters[4];
-            string connEnd = starters[6];
+            string connEnd = enders[5];
+            if (line.Contains(connStart))
+            {
+                return true;
+            }
             return false;
         }
+
+        // This method reads the first connection device from a terminal string.
+        // param string file line
+        // returns string first connection device ID.
         public string ReadConnOneDevice(string line)
         {
             string connOneDevStart = starters[2];
             string connOneDevEnd = enders[2];
             return GetSubstring(line, connOneDevStart, connOneDevEnd).Trim();
         }
+
+        // This method reads the first connection terminal from a terminal string.
+        // param string file line
+        // returns string first connection terminal ID.
         public string ReadConnOneTerminal(string line)
         {
             string connOneTermStart = starters[3];
-            string connOneTermEnd = enders[3];
+            string connOneTermEnd = line.Contains(enders[3]) ? enders[3]: "";
+            
             return GetSubstring(line, connOneTermStart, connOneTermEnd).Trim();
         }
+
+        // This method reads the second connection device from a terminal string.
+        // param string file line
+        // returns string second connection device ID.
         public string ReadConnTwoDevice(string line)
         {
             string connTwoDevStart = starters[4];
             string connTwoDevEnd = enders[4];
-            return GetSubstring(line, connTwoDevStart, connTwoDevEnd).Trim();
+            int index = line.IndexOf(connTwoDevStart);
+            string str = line.Substring(index);
+            return GetSubstring(str, connTwoDevStart, connTwoDevEnd).Trim();
         }
+
+        // This method reads the second connection terminal from a terminal string.
+        // param string file line
+        // returns string second connection terminal ID.
         public string ReadConnTwoTerminal(string line)
         {
             string connTwoTermStart = starters[5];
             string connTwoTermEnd = enders[5];
-            return GetSubstring(line, connTwoTermStart, connTwoTermEnd).Trim();
+            int index = line.LastIndexOf(connTwoTermStart);
+            string str = line.Substring(index);
+            return GetSubstring(str, connTwoTermStart, connTwoTermEnd).Trim();
         }
+
+        // This method gets a substring between specified starter and ender.
+        // param string file line, string starter, string ender
+        // returns string between starter and ender characters.
         public string GetSubstring(string line, string start, string end)
         {
             int startIndex;
@@ -142,42 +246,8 @@ namespace WireWizard.Contoller
             
             return line.Substring(startIndex, length);    
         }
-        public void Read(string[]lines, out Queue<Device> devices, out Queue<Wire> wires)
-        {   
-                        
-            
 
-            
-            string connOneTermStart = starters[3];
-            string connOneTermEnd = enders[3];
-            string connTwoDevStart = starters[4];
-            string connTwoDevEnd = enders[4];
-            string connTwoTermStart = starters[5];
-            string connTwoTermEnd = enders[5];
-
-            devices = new Queue<Device>();
-            wires = new Queue<Wire>();
-
-            foreach (string line in lines)
-            {
-                // If this line is empty, go to next.
-                if (line.Trim().Equals(""))
-                {
-                    continue;
-                }
-                // If line contains device name, create device.
-               else //When line is a connection string,
-            {
-                string str = "";
-                // Get terminalID.
-                int dotIndex = line.IndexOf('.');
-                str = line.Substring(0, dotIndex);
-                try { }
-                catch (DuplicateTerminalIDException e) { }
-            }
-            }
-        }
-
+        // This method sets the starters and enders arrays to the selected characters.
         private void SetFormat()
         {
             starters = new string[markers.Length];
@@ -250,6 +320,9 @@ namespace WireWizard.Contoller
             }
         }
 
+        // This method gets a starter of an index from the format string.
+        // params int index of starter, string connection format.
+        // returns string starter characters.
         private string GetStarter(int index, string connectionFormat)
         {
             int i = connectionFormat.IndexOf(markers[index]);
@@ -261,6 +334,9 @@ namespace WireWizard.Contoller
             return "";
         }
 
+        // This method gets an ender of an index from the format string.
+        // params int index of ender, string connection format.
+        // returns string ender characters.
         private string GetEnder(int index, string connectionFormat)
         {
             int i = connectionFormat.IndexOf(markers[index]);
@@ -280,20 +356,58 @@ namespace WireWizard.Contoller
             return "";
         }
 
-        internal bool IsDeviceName(string line, string start, string end)
+        // This method gets the device ID for a destination ID.
+        // params string destination
+        // returns string device ID of destination.
+        public string DestinationDeviceID(string destination)
         {
-            if (line.Contains(start) && line.Contains(end))
+            string termSep = starters[3];
+            if (destination.Contains(termSep))
             {
-                return true;
+                int i = destination.IndexOf(termSep);
+                return destination.Substring(0, i);
             }
-            return false;
+            return destination;
         }
 
-        internal string GetDeviceName(string line, string start, string end)
+        // This method gets the terminal ID for a destination ID.
+        // params string destination
+        // returns string terminal ID of destination. 
+        public string DestinationTerminalID(string destination)
         {
-            int indexStart = line.IndexOf(start);
-            int indexEnd = line.IndexOf(end);
-            return line.Substring(indexStart + 1, indexEnd - indexStart - 1);
-        }   
+            string termSep = starters[3];
+            if (destination.Contains(termSep))
+            {
+                int i = destination.IndexOf(termSep);
+                return destination.Substring(i+1);
+            }
+            return destination;
+        }
+
+        // This method provides a sample device ID string of the current format.
+        // returns string device ID example.
+        public string ExampleDevice()
+        {
+            string name = "AA";
+            return starters[0] + name + enders[0];            
+        }
+
+        // This method provides a sample terminal detail string of the current format.
+        // returns string terminal detail example.
+        public string ExampleConnection()
+        {
+            string termID = "1";
+            string dest1dev = "BA";
+            string dest1term = "4";
+            string dest2dev = "TA";
+            string dest2term = "2";
+            string[] strings = new string[] { termID, dest1dev, dest1term, dest2dev, dest2term };
+            string result = "";
+            for (int i = 1; i < starters.Length; i++)
+            {
+                result += starters[i] + strings[i - 1];
+            }
+            return result;
+        }
     }
 }

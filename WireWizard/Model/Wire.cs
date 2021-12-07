@@ -13,8 +13,11 @@ namespace WireWizard
         private string id;
         private static int nextID = 1000;
         private int gauge;
+
+        // Default Constructor
         public Wire() { }
 
+        // Constructor taking origin and destination Terminals.
         public Wire(Terminal origin, Terminal destination)
         {
             this.origin = origin;
@@ -22,14 +25,8 @@ namespace WireWizard
             this.id = this.GetID();
             this.gauge = 14;
         }
-        public Wire(Terminal origin, Terminal destination, int gauge, string id)
-        {
-            this.origin = origin;
-            this.destination = destination;
-            this.id = id;
-            this.gauge = gauge;
-        }
 
+        // Accessors.
         public Terminal Origin
         {
             get { return origin; }
@@ -50,11 +47,16 @@ namespace WireWizard
             get { return gauge; }
             set { gauge = value; }
         }
+
+        // This method creates a unique ID number from a seed.
         internal string GetID()
         {
             return nextID++.ToString();
         }
 
+        // This method checks that the wire is connected to a terminal.
+        // param Terminal
+        // returns boolean true if input terminal matches origin or destination terminal.
         public bool IsConnected(Terminal t)
         {
             if (origin.Equals(t) || destination.Equals(t))
@@ -67,12 +69,15 @@ namespace WireWizard
             return false;
         }
 
+        // This method connects the wire to the origin and the destination terminals.
         public void Connect()
         {
             this.origin.Connect(this);
             this.destination.Connect(this);
         }
 
+        // This method creates a string to describe the wire object.
+        // returns string of wire object details.
         public override string ToString()
         {
             return "Wire ID: " + this.ID + " " + this.origin.ToString() + " - " + 
