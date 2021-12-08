@@ -1,4 +1,22 @@
-﻿using System;
+﻿/***************************************************************
+* Name : WireWizard
+* Author: Dominic Wood
+* Created : 11/10/2021
+* Course: CIS 152 - Data Structure
+* Version: 1.0
+* OS: Windows 10
+* IDE: Visual Studio 2019
+* Copyright : This is my own original work 
+* based on specifications issued by our instructor.
+* Description : An app that analyzes wire diagrams and reports
+*               problems in them.
+* Academic Honesty: I attest that this is my original work.
+* I have not used unauthorized source code, either modified or
+* unmodified. I have not given other fellow student(s) access
+* to my program.
+***************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using WireWizard.Contoller;
